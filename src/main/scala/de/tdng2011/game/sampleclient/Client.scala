@@ -1,3 +1,5 @@
+package de.tdng2011.game.sampleclient
+
 import java.net.Socket
 import java.nio.ByteBuffer
 

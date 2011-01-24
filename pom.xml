@@ -62,6 +62,24 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.dstovall</groupId>
+                <artifactId>onejar-maven-plugin</artifactId>
+                <version>1.4.4.1</version>
+                <configuration>
+                    <filename>${project.build.finalName}.runnable.jar</filename>
+                    <mainClass>de.tdng2011.game.sampleclient.Client</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>one-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 
