@@ -3,6 +3,7 @@ package de.tdng2011.game.sampleclient
 import java.net.Socket
 import java.nio.ByteBuffer
 import de.tdng2011.game.library.{Player, Shot}
+import visual.Visualizer
 
 object Client {
   val playerType = 0
@@ -10,6 +11,8 @@ object Client {
   val worldType = 3
 
   var entityList = List[Any]()
+
+  Visualizer.start
 
   def main(args : Array[String]){
      val connection = new Socket("localhost",1337);
@@ -25,7 +28,7 @@ object Client {
        } else if (id == shotType) {
          entityList = new Shot(connection.getInputStream) :: entityList
        } else if(id == worldType) {
-         println("world begin!")
+         Visualizer !! entityList
          entityList = List[Any]()
        } else {
          println("barbra streisand! (unknown bytes, wth?!")
