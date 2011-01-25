@@ -1,8 +1,8 @@
 package de.tdng2011.game.sampleclient
 
 import java.net.Socket
-import java.nio.ByteBuffer
 import de.tdng2011.game.library.{Player, Shot}
+import de.tdng2011.game.library.util.StreamUtil
 import visual.Visualizer
 
 object Client {
@@ -15,12 +15,10 @@ object Client {
   Visualizer.start
 
   def main(args : Array[String]){
-    //val connection = new Socket("remote.coding4coffee.org",1337);
-    val connection = new Socket("localhost",1337);
+    val connection = new Socket("remote.coding4coffee.org",1337);
+    //val connection = new Socket("localhost",1337);
     while(true){
-      val byteArray = new Array[Byte](2)
-      connection.getInputStream.read(byteArray, 0, 2)
-      val buf = ByteBuffer.wrap(byteArray)
+      val buf = StreamUtil.read(connection.getInputStream, 2)
 
       val id = buf.getShort
 
@@ -30,7 +28,7 @@ object Client {
       } else if (id == shotType) {
         println("shot")
         entityList = new Shot(connection.getInputStream) :: entityList
-      } else if(id == worldType) {    	  
+      } else if(id == worldType) {
         Visualizer !! entityList
         println("world")
         entityList = List[Any]()

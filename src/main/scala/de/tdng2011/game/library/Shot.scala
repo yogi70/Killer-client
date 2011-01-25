@@ -1,7 +1,7 @@
 package de.tdng2011.game.library
 
 import java.io.InputStream
-import java.nio.ByteBuffer
+import util.StreamUtil
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,9 +12,7 @@ import java.nio.ByteBuffer
  */
 
 class Shot(stream : InputStream) {
-  val byteArray = new Array[Byte](36)
-  stream.read(byteArray, 0, 36)
-  val buf = ByteBuffer.wrap(byteArray)
+  val buf = StreamUtil.read(stream, 36)
 
   val publicId  : Long    = buf.getLong
   val pos       : Vec2    = Vec2(buf.getFloat, buf.getFloat)
