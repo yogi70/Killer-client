@@ -12,7 +12,7 @@ import java.nio.ByteBuffer
  */
 
 class Shot(stream : InputStream) {
-  val byteArray = new Array[Byte](38)
+  val byteArray = new Array[Byte](36)
   stream.read(byteArray)
   val buf = ByteBuffer.wrap(byteArray)
 

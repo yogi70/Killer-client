@@ -32,7 +32,7 @@ object Client {
         entityList = new Shot(connection.getInputStream) :: entityList
       } else if(id == worldType) {    	  
         Visualizer !! entityList
-        println("world")  
+        println("world")
         entityList = List[Any]()
       } else {
         println("barbra streisand! (unknown bytes, wth?!) typeId: " + id)
