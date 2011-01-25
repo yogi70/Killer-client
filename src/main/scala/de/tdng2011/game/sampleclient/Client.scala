@@ -24,24 +24,10 @@ object Client {
        val id = buf.getShort
 
        if(id == playerType) {
-         println("player")
-         val player = new Player(connection.getInputStream)
-         println("PublicID: "   + player.publicId + " " +
-                 "Pos: "      + player.pos.toString + " " +
-                 "Direction: "  + player.direction + " " +
-                 "Radius: "     + player.radius + " " +
-                 "Speed: "      + player.speed + " " +
-                 "rotSpeed: "   + player.rotSpeed + " " +
-                 "turnLeft: "   + player.turnLeft + " " +
-                 "turnRight: "  + player.turnRight + " " +
-                 "thrust: "     + player.thrust + " " +
-                 "fire: "       + player.fire)
-         entityList = player :: entityList
+         entityList = new Player(connection.getInputStream) :: entityList
        } else if (id == shotType) {
-         println("shot")
          entityList = new Shot(connection.getInputStream) :: entityList
        } else if(id == worldType) {
-         println("world")
          Visualizer !! entityList
          entityList = List[Any]()
        } else {
