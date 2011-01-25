@@ -13,7 +13,7 @@ import java.nio.ByteBuffer
 
 class Player (stream : InputStream) {
   val byteArray = new Array[Byte](32)
-  stream.read(byteArray)
+  stream.read(byteArray, 0, 32)
   val buf = ByteBuffer.wrap(byteArray)
 
   val publicId  : Long    = buf.getLong

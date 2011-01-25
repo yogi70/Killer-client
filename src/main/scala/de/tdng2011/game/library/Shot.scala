@@ -13,7 +13,7 @@ import java.nio.ByteBuffer
 
 class Shot(stream : InputStream) {
   val byteArray = new Array[Byte](36)
-  stream.read(byteArray)
+  stream.read(byteArray, 0, 36)
   val buf = ByteBuffer.wrap(byteArray)
 
   val publicId  : Long    = buf.getLong

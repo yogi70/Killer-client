@@ -19,7 +19,7 @@ object Client {
     val connection = new Socket("localhost",1337);
     while(true){
       val byteArray = new Array[Byte](2)
-      connection.getInputStream.read(byteArray)
+      connection.getInputStream.read(byteArray, 0, 2)
       val buf = ByteBuffer.wrap(byteArray)
 
       val id = buf.getShort
