@@ -82,8 +82,8 @@ object Visualizer extends Actor {
       val ahead = Vec2(1, 0).rotate(player.direction)
       val posPeak = player.pos + ahead * (lineLength / 2)
 
-      val aheadLeft = Vec2(1, 0).rotate(player.direction + sin(60) + Pi)
-      val aheadRight = Vec2(1, 0).rotate(player.direction - sin(60) + Pi)
+      val aheadLeft = Vec2(1, 0).rotate((player.direction + sin(60) + Pi).floatValue)
+      val aheadRight = Vec2(1, 0).rotate((player.direction - sin(60) + Pi).floatValue)
 
       val posLeft = posPeak + aheadLeft * lineLength
       val posRight = posPeak + aheadRight * lineLength

@@ -12,15 +12,15 @@ import java.nio.ByteBuffer
  */
 
 class Shot(stream : InputStream) {
-  val byteArray = new Array[Byte](52)
+  val byteArray = new Array[Byte](38)
   stream.read(byteArray)
   val buf = ByteBuffer.wrap(byteArray)
 
-  val publicId : Long     = buf.getLong
-  val pos : Vec2          = Vec2(buf.getDouble, buf.getDouble)
-  val direction : Double  = buf.getDouble
-  val radius : Int        = buf.getInt
-  val speed : Int         = buf.getInt
-  val parentId : Long     = buf.getLong
-  val lifeTime : Float    = buf.getFloat
+  val publicId  : Long    = buf.getLong
+  val pos       : Vec2    = Vec2(buf.getFloat, buf.getFloat)
+  val direction : Float   = buf.getFloat
+  val radius    : Short   = buf.getShort
+  val speed     : Short   = buf.getShort
+  val parentId  : Long    = buf.getLong
+  val lifeTime  : Float   = buf.getFloat
 }

@@ -2,14 +2,14 @@ package de.tdng2011.game.library
 
 import scala.math._
 
-case class Vec2(x:Double,y:Double) {
+case class Vec2(x:Float,y:Float) {
 
-	def +(v:Vec2)  = Vec2(x+v.x,y+v.y)
+	def +(v:Vec2) = Vec2(x+v.x,y+v.y)
 	def -(v:Vec2) = Vec2(x-v.x,y-v.y)
 	def *(v:Vec2) = x*v.x + y*v.y
-	def *(n:Double) = Vec2(x*n,y*n)
-	def cross(v:Vec2) : Double = x*v.y - v.x*y   // only the z.component of the cross product
-	def rotate(rad:Double) = Vec2( x*cos(rad) - y*sin(rad) , x*sin(rad) + y*cos(rad))
+	def *(n:Float) = Vec2(x*n,y*n)
+	def cross(v:Vec2) : Float = x*v.y - v.x*y   // only the z.component of the cross product
+	def rotate(rad:Float) = Vec2((x*cos(rad) - y*sin(rad)).floatValue, (x*sin(rad) + y*cos(rad)).floatValue)
 
 	def length = sqrt(x*x+y*y)
 

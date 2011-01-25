@@ -12,18 +12,18 @@ import java.nio.ByteBuffer
  */
 
 class Player (stream : InputStream) {
-  val byteArray = new Array[Byte](52)
+  val byteArray = new Array[Byte](32)
   stream.read(byteArray)
   val buf = ByteBuffer.wrap(byteArray)
 
-  val publicId : Long     = buf.getLong
-  val pos : Vec2          = Vec2(buf.getDouble, buf.getDouble)
-  val direction : Double  = buf.getDouble
-  val radius : Int        = buf.getInt
-  val speed : Int         = buf.getInt
-  val rotSpeed : Double   = buf.getDouble
-  val turnLeft : Boolean  = buf.get == 1
+  val publicId  : Long    = buf.getLong
+  val pos       : Vec2    = Vec2(buf.getFloat, buf.getFloat)
+  val direction : Float   = buf.getFloat
+  val radius    : Short   = buf.getShort
+  val speed     : Short   = buf.getShort
+  val rotSpeed  : Float   = buf.getFloat
+  val turnLeft  : Boolean = buf.get == 1
   val turnRight : Boolean = buf.get == 1
-  val thrust : Boolean    = buf.get == 1
-  val fire : Boolean      = buf.get == 1
+  val thrust    : Boolean = buf.get == 1
+  val fire      : Boolean = buf.get == 1
 }
