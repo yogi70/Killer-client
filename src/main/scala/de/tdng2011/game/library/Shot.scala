@@ -1,6 +1,6 @@
 package de.tdng2011.game.library
 
-import java.io.InputStream
+import java.io.DataInputStream
 import util.StreamUtil
 
 /**
@@ -11,7 +11,7 @@ import util.StreamUtil
  * To change this template use File | Settings | File Templates.
  */
 
-class Shot(stream : InputStream) {
+class Shot(stream : DataInputStream) {
   val buf = StreamUtil.read(stream, 36)
 
   val publicId  : Long    = buf.getLong

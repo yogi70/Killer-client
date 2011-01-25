@@ -1,7 +1,7 @@
 package de.tdng2011.game.library.util
 
-import java.io.InputStream
 import java.nio.ByteBuffer
+import java.io.DataInputStream
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,12 +13,9 @@ import java.nio.ByteBuffer
 
 object StreamUtil {
 
-  def read(stream : InputStream, count : Int) : ByteBuffer = {
-    while (stream.available < count) {
-      Thread.sleep(2)
-    }
+  def read(stream : DataInputStream, count : Int) : ByteBuffer = {
     val byteArray = new Array[Byte](count)
-    stream.read(byteArray)
+    stream.readFully(byteArray)
     ByteBuffer.wrap(byteArray)
   }
 }
