@@ -26,4 +26,7 @@ class Player (stream : InputStream) {
   val turnRight : Boolean = buf.get == 1
   val thrust    : Boolean = buf.get == 1
   val fire      : Boolean = buf.get == 1
+  
+  override def toString() = "Player(id: " + publicId + ", pos: " + pos + ", direction: " + direction + ", radius: " + radius + ", speed: " + speed + 
+                              ", rotSpeed: " + rotSpeed + ", turnLeft: " + turnLeft + ", turnRight: " + turnRight + ", thrust: " + thrust + ", fire: " + fire + ")"
 }

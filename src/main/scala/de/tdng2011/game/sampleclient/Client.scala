@@ -15,26 +15,33 @@ object Client {
   Visualizer.start
 
   def main(args : Array[String]){
-     val connection = new Socket("localhost",1337);
-     while(true){
-       val byteArray = new Array[Byte](2)
-       connection.getInputStream.read(byteArray)
-       val buf = ByteBuffer.wrap(byteArray)
+    //val connection = new Socket("remote.coding4coffee.org",1337);
+    val connection = new Socket("localhost",1337);
+    while(true){
+      val byteArray = new Array[Byte](2)
+      connection.getInputStream.read(byteArray)
+      val buf = ByteBuffer.wrap(byteArray)
 
-       val id = buf.getShort
+      val id = buf.getShort
 
-       if(id == playerType) {
-         entityList = new Player(connection.getInputStream) :: entityList
-       } else if (id == shotType) {
-         entityList = new Shot(connection.getInputStream) :: entityList
-       } else if(id == worldType) {
-         Visualizer !! entityList
-         entityList = List[Any]()
-       } else {
-         println("barbra streisand! (unknown bytes, wth?!)")
-         System.exit(-1)
-       }
-
-     }
+      if(id == playerType) {
+        println("player")
+        entityList = new Player(connection.getInputStream) :: entityList
+      } else if (id == shotType) {
+        println("shot")
+        entityList = new Shot(connection.getInputStream) :: entityList
+      } else if(id == worldType) {    	  
+        Visualizer !! entityList
+        println("world")  
+        entityList = List[Any]()
+      } else {
+        println("barbra streisand! (unknown bytes, wth?!) typeId: " + id)
+        println("current world:")
+        for (x <- entityList) {
+          println(x)
+        }
+        System.exit(-1)
+      }
+    }
   }
 }
