@@ -42,8 +42,7 @@ object Client {
   }
   def connect() : Socket = {
     val connection : Socket = try {
-      val con = new Socket("localhost",1337)
-      con
+      new Socket("localhost",1337)
     } catch {
       case e => {
         println("connecting failed. retrying in 5 seconds");
