@@ -27,21 +27,14 @@ object Client {
       val id = buf.getShort
 
       if(id == playerType) {
-        println("player")
         entityList = new Player(stream) :: entityList
       } else if (id == shotType) {
-        println("shot")
         entityList = new Shot(stream) :: entityList
       } else if(id == worldType) {
         Visualizer !! entityList
-        println("world")
         entityList = List[Any]()
       } else {
         println("barbra streisand! (unknown bytes, wth?!) typeId: " + id)
-        println("current world:")
-        for (x <- entityList) {
-          println(x)
-        }
         System.exit(-1)
       }
     }
