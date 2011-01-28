@@ -14,9 +14,10 @@ object Client {
   var entityList = List[Any]()
 
   Visualizer.start
+  var connection : Socket = connect()
 
   def main(args : Array[String]){
-    val connection = new Socket("remote.coding4coffee.org",1337);
+
     //val connection = new Socket("localhost",1337);
 
     val stream = new DataInputStream(connection.getInputStream)
@@ -38,5 +39,18 @@ object Client {
         System.exit(-1)
       }
     }
+  }
+  def connect() : Socket = {
+    val connection : Socket = try {
+      val con = new Socket("localhost",1337)
+      con
+    } catch {
+      case e => {
+        println("connecting failed. retrying in 5 seconds");
+        Thread.sleep(5000)
+        connect()
+      }
+    }
+    connection
   }
 }
