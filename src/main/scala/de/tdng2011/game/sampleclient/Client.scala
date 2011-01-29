@@ -2,7 +2,6 @@ package de.tdng2011.game.sampleclient
 
 import java.net.Socket
 import de.tdng2011.game.library.{Player, Shot}
-import visual.Visualizer
 import java.io.DataInputStream
 import de.tdng2011.game.library.util.{ByteUtil, StreamUtil}
 
@@ -13,7 +12,6 @@ object Client {
 
   var entityList = List[Any]()
 
-  Visualizer.start
   val connection : Socket = connect()
   handshakePlayer
 
@@ -31,7 +29,6 @@ object Client {
       } else if (id == shotType) {
         entityList = new Shot(stream) :: entityList
       } else if(id == worldType) {
-        Visualizer !! entityList
         entityList = List[Any]()
       } else {
         println("barbra streisand! (unknown bytes, wth?!) typeId: " + id)
@@ -41,7 +38,6 @@ object Client {
   }
 
 
-  def handshakeVisualizer =  connection.getOutputStream.write(ByteUtil.toByteArray(1.shortValue));
   def handshakePlayer     =  {
     connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue, "123456789012"))
     val response = StreamUtil.read(new DataInputStream(connection.getInputStream), 9);
