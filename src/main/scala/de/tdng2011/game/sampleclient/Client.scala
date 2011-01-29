@@ -20,6 +20,8 @@ object Client {
   def main(args : Array[String]){
     val stream = new DataInputStream(connection.getInputStream)
 
+    connection.getOutputStream.write(ByteUtil.toByteArray(true, false, true, false))
+
     while(true){
       val buf = StreamUtil.read(stream, 2)
       val id = buf.getShort
@@ -40,10 +42,15 @@ object Client {
 
 
   def handshakeVisualizer =  connection.getOutputStream.write(ByteUtil.toByteArray(1.shortValue));
-  def handshakePlayer     =  connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue));
+  def handshakePlayer     =  {
+    connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue))
+    val response = StreamUtil.read(new DataInputStream(connection.getInputStream), 9);
+    println("response code: " + response.get)
+    println("publicId: " + response.getLong)
+  };
 
   def connect() : Socket = {
-    val connection : Socket = try {
+    try {
       new Socket("localhost",1337)
     } catch {
       case e => {
@@ -52,6 +59,5 @@ object Client {
         connect()
       }
     }
-    connection
   }
 }
