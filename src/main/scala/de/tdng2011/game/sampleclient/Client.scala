@@ -43,7 +43,7 @@ object Client {
 
   def handshakeVisualizer =  connection.getOutputStream.write(ByteUtil.toByteArray(1.shortValue));
   def handshakePlayer     =  {
-    connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue))
+    connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue, "123456789012"))
     val response = StreamUtil.read(new DataInputStream(connection.getInputStream), 9);
     println("response code: " + response.get)
     println("publicId: " + response.getLong)
