@@ -15,7 +15,7 @@ object Client {
 
   Visualizer.start
   val connection : Socket = connect()
-  handshakeVisualizer
+  handshakePlayer
 
   def main(args : Array[String]){
     val stream = new DataInputStream(connection.getInputStream)
