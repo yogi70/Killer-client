@@ -22,6 +22,10 @@
 			<artifactId>scala-library</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-swing</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>de.tdng2010.game</groupId>
 			<artifactId>scubywars.library</artifactId>
 			<version>0.5.2</version>
