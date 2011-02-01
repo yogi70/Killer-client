@@ -4,17 +4,22 @@ import java.net.Socket
 import java.io.DataInputStream
 import de.tdng2011.game.library.util.{ByteUtil, StreamUtil}
 import de.tdng2011.game.library.{EntityTypes, Player, Shot}
+import actors.Actor
 
-object Client {
+case class Client(hostname : String) extends Actor with Runnable {
+
+  val name = "123456789012"
+  var publicId : Long = 0L
+
   var entityList = List[Any]()
 
-  val connection : Socket = connect()
-  handshakePlayer
+  private val connection : Socket = connect()
+  handshakePlayer()
+  new Thread(this).start
+  start
 
-  def main(args : Array[String]){
+  def run() {
     val iStream = new DataInputStream(connection.getInputStream)
-
-    connection.getOutputStream.write(ByteUtil.toByteArray(true, false, true, false))
 
     while(true){
       val buf = StreamUtil.read(iStream, 2)
@@ -24,6 +29,7 @@ object Client {
         case x if x == EntityTypes.Player.id => entityList = entityList :+ new Player(iStream)
         case x if x == EntityTypes.Shot.id   => entityList = entityList :+ new Shot(iStream)
         case x if x == EntityTypes.World.id  => {
+          // TODO: do something
           entityList = List[Any]()
         }
         case x => {
@@ -34,16 +40,30 @@ object Client {
     }
   }
 
-  def handshakePlayer =  {
-    connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue, "123456789012"))
+  def act = {
+    loop{
+      react{
+        case x : PlayerActionMessage => {
+          connection.getOutputStream.write(ByteUtil.toByteArray(x.turnLeft, x.turnRight, x.thrust, x.fire))
+        }
+
+        case barbraStreisand => {
+          println("[client] wuhuhuhu barbra streisand: " + barbraStreisand)
+        }
+      }
+    }
+  }
+
+  private def handshakePlayer() =  {
+    connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue, name))
     val response = StreamUtil.read(new DataInputStream(connection.getInputStream), 9)
     println("response code: " + response.get)
-    println("publicId: " + response.getLong)
-  };
+    publicId = response.getLong
+  }
 
-  def connect() : Socket = {
+  private def connect() : Socket = {
     try {
-      new Socket("localhost",1337)
+      new Socket(hostname, 1337)
     } catch {
       case e => {
         println("connecting failed. retrying in 5 seconds");
