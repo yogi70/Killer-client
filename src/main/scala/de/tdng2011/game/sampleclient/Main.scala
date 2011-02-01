@@ -14,8 +14,8 @@ object Main extends SwingApplication{
       val connectionButton = new Button("Connect!") {
         reactions += {
           case x:ButtonClicked => {
-            Client(inputField.text) !! PlayerActionMessage(true, false, true, false)
-            //close
+            new ControlFrame(new Client(inputField.text))
+            close
           }
         }
       }

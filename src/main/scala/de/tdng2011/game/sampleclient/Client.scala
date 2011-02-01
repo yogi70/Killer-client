@@ -6,7 +6,7 @@ import de.tdng2011.game.library.util.{ByteUtil, StreamUtil}
 import de.tdng2011.game.library.{EntityTypes, Player, Shot}
 import actors.Actor
 
-case class Client(hostname : String) extends Actor with Runnable {
+class Client(hostname : String) extends Actor with Runnable {
 
   val name = "123456789012"
   var publicId : Long = 0L
