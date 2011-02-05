@@ -7,6 +7,9 @@ import de.tdng2011.game.library.{EntityTypes, Player, Shot}
 import actors.Actor
 
 class Client(hostname : String) extends Actor with Runnable {
+  val playerType = EntityTypes.Player.id.shortValue
+  val shotType = EntityTypes.Shot.id.shortValue
+  val worldType = EntityTypes.World.id.shortValue
 
   val name = "123456789012"
   var publicId : Long = 0L
@@ -21,22 +24,21 @@ class Client(hostname : String) extends Actor with Runnable {
   def run() {
     val iStream = new DataInputStream(connection.getInputStream)
 
-    while(true){
-      val buf = StreamUtil.read(iStream, 2)
-      val id = buf.getShort
+    while(true) getFrame(iStream)
+  }
 
-      id match {
-        case x if x == EntityTypes.Player.id => entityList = entityList :+ new Player(iStream)
-        case x if x == EntityTypes.Shot.id   => entityList = entityList :+ new Shot(iStream)
-        case x if x == EntityTypes.World.id  => {
-          // TODO: do something
-          entityList = List[Any]()
-        }
-        case x => {
-          println("barbra streisand! (unknown bytes, wth?!) typeId: " + id)
-          System exit -1
-        }
-      }
+  def getFrame(iStream : DataInputStream) : List[Any] = StreamUtil.read(iStream, 2).getShort match {
+    case `playerType` => new Player(iStream) :: getFrame(iStream)
+    case `shotType`   => new Shot(iStream) :: getFrame(iStream)
+    case `worldType`  => {
+      val size = StreamUtil.read(iStream, 4).getInt
+      StreamUtil.read(iStream, size)
+      Nil
+    }
+    case x => {
+          println("barbra streisand! (unknown bytes, wth?!) typeId: " + x)
+          System.exit(-1)
+          Nil // make the compiler happy..
     }
   }
 
@@ -44,7 +46,7 @@ class Client(hostname : String) extends Actor with Runnable {
     loop{
       react{
         case x : PlayerActionMessage => {
-          connection.getOutputStream.write(ByteUtil.toByteArray(x.turnLeft, x.turnRight, x.thrust, x.fire))
+          connection.getOutputStream.write(ByteUtil.toByteArray(EntityTypes.Action, x.turnLeft, x.turnRight, x.thrust, x.fire))
         }
 
         case barbraStreisand => {
@@ -55,10 +57,20 @@ class Client(hostname : String) extends Actor with Runnable {
   }
 
   private def handshakePlayer() =  {
-    connection.getOutputStream.write(ByteUtil.toByteArray(0.shortValue, name))
-    val response = StreamUtil.read(new DataInputStream(connection.getInputStream), 9)
-    println("response code: " + response.get)
-    publicId = response.getLong
+    val iStream = new DataInputStream(connection.getInputStream)
+    connection.getOutputStream.write(ByteUtil.toByteArray(EntityTypes.Handshake, 0.shortValue, name))
+
+    val buf    = StreamUtil.read(iStream, 6)
+    val typeId = buf.getShort
+    val size   = buf.getInt
+
+    val response = StreamUtil.read(iStream, size)
+    if (typeId == EntityTypes.Handshake.id) {
+      val responseCode = response.get
+      println("response code: " + responseCode)
+      if (responseCode == 0)
+        publicId = response.getLong
+    }
   }
 
   private def connect() : Socket = {
