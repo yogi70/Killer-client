@@ -4,7 +4,7 @@ import swing.event.ButtonClicked
 import swing.{Reactions, ToggleButton, FlowPanel, MainFrame}
 
 class ControlFrame(val client : Client) extends MainFrame {
-  title = "Client ID: " + client.publicId
+  title = "Client ID: " + client.getPublicId
 
   val leftButton : ToggleButton = new ToggleButton("turnLeft") {
     reactions += clickReaction
