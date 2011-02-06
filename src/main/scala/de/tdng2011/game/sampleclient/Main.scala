@@ -10,6 +10,7 @@ object Main extends SwingApplication{
       val inputField = new TextField {
         text = "localhost"
         columns = 20
+        selectAll
       }
       val connectionButton = new Button("Connect!") {
         reactions += {
