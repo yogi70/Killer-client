@@ -3,7 +3,7 @@ package de.tdng2011.game.sampleclient
 import de.tdng2011.game.library.util.ByteUtil
 import actors.Actor
 import de.tdng2011.game.library.connection.{RelationTypes, AbstractClient}
-import de.tdng2011.game.library.{World, EntityTypes}
+import de.tdng2011.game.library.{ScoreBoard, World, EntityTypes}
 
 class Client(hostname : String) extends AbstractClient(hostname, RelationTypes.Player) with Actor {
 
@@ -26,4 +26,5 @@ class Client(hostname : String) extends AbstractClient(hostname, RelationTypes.P
   }
 
   def processWorld(world : World) {}
+  def processScoreBoard(scoreBoard : ScoreBoard) {}
 }
