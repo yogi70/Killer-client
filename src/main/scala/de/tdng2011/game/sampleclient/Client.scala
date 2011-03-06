@@ -26,5 +26,4 @@ class Client(hostname : String) extends AbstractClient(hostname, RelationTypes.P
   }
 
   def processWorld(world : World) {}
-  def processScoreBoard(scoreBoard : ScoreBoard) {}
 }
