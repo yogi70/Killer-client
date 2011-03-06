@@ -1,9 +1,9 @@
 package de.tdng2011.game.sampleclient
 
 import de.tdng2011.game.library.util.ByteUtil
-import de.tdng2011.game.library.EntityTypes
 import actors.Actor
 import de.tdng2011.game.library.connection.{RelationTypes, AbstractClient}
+import de.tdng2011.game.library.{World, EntityTypes}
 
 class Client(hostname : String) extends AbstractClient(hostname, RelationTypes.Player) with Actor {
 
@@ -15,7 +15,7 @@ class Client(hostname : String) extends AbstractClient(hostname, RelationTypes.P
     loop{
       react{
         case x : PlayerActionMessage => {
-          getConnection.getOutputStream.write(ByteUtil.toByteArray(EntityTypes.Action, x.turnLeft, x.turnRight, x.thrust, x.fire))
+          action(x.turnLeft, x.turnRight, x.thrust, x.fire)
         }
 
         case barbraStreisand => {
@@ -25,5 +25,5 @@ class Client(hostname : String) extends AbstractClient(hostname, RelationTypes.P
     }
   }
 
-  def processFrame(fame : List[Any]) {}
+  def processWorld(world : World) {}
 }
