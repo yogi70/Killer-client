@@ -7,111 +7,110 @@ import de.tdng2011.game.library.{ScoreBoard, World, EntityTypes,Player}
 import scala.math.{asin,atan,abs}
 
 class Client(hostname : String,myName:String) extends AbstractClient(hostname, RelationTypes.Player) {
-  val worldSize=1000
+	val worldSize=1000
+	val minDistFactor=5
 
-  override def name = myName
+	override def name = myName
 
-  var shotSpeed=10
-  var lastNextPos=new Vec2(0,0)
-  var lastCanShoot=true
-  var lastTarget:Long=0
-  var blackList:Long=0
+	var shotSpeed=10
+	var shotRadius=1
+	var lastNextPos=Vec2(0,0)
+	var lastCanShoot=true
+	var lastNextPublicId:Long=0
+	var blackList:Long=0
 
-  def norm(v:Vec2)=if (v.length==0) new Vec2(1,0) else new Vec2(v.x/v.length.floatValue,v.y/v.length.floatValue)
+	def norm(v:Vec2)={ 
+		val l=v.length.floatValue 
+		if (l==0) Vec2(1,0) else Vec2(v.x/l,v.y/l) 
+	}
 
-  def fix(a:Vec2, b:Vec2) = {
-  	var ax=a.x
-	var ay=a.y
-	var bx=b.x
-	var by=b.y
+	def fixTurnAround(a:Vec2, b:Vec2) = {
+		def minFix(me:Float, you:Float) = if (me<you) me+worldSize else me
+		def near(a:Float,b:Float) = abs(a-b) < worldSize/2
 
-	if (abs(ax-bx)>worldSize/2)
-		if (ax<bx)
-			ax=ax+worldSize
-		else
-			bx=bx+worldSize
+		def fixX( t:(Vec2,Vec2) ) = 
+			if ( near(t._1.x,t._2.x) ) 
+				(t._1,t._2) 
+			else 
+				( Vec2(minFix(t._1.x,t._2.x) , t._1.y) , Vec2(minFix(t._2.x,t._1.x) , t._2.y) )
 
-	if (abs(ay-by)>worldSize/2)
-		if (ay<by)
-			ay=ay+worldSize
-		else
-			by=by+worldSize
+		def fixY( t:(Vec2,Vec2) ) = 
+			if ( near(t._1.y,t._2.y) ) 
+				(t._1,t._2) 
+			else 
+				( Vec2(t._1.x , minFix(t._1.y,t._2.y)) , Vec2(t._2.x , minFix(t._2.y,t._1.y)) )
 
-	(new Vec2(ax,ay), new Vec2(bx,by))
-  }
-
-  def dist(a:Player, b:Player) = {
-		val (apos,bpos)=fix(a.pos,b.pos)
+		fixX(fixY( (a,b) ))
+	}
+	
+	def dist(a:Player, b:Player) = {
+		val (apos,bpos)=fixTurnAround(a.pos,b.pos)
 		(apos - bpos).length
-  }
+	}
 
-  def getNext(self:Player)(a:Player,b:Player) = if (a==self) b else if (b==self) a else if (a.publicId==blackList) b else if (b.publicId==blackList) a else if (dist(self,a) < dist(self,b)) a else b
-  def findNextPlayer(world:World,self:Player) = world.players.reduceRight(getNext(self))
+	def getNext(self:Player)(a:Player,b:Player) = 
+		if (a==self) b else 
+		if (b==self) a else 
+		/*
+		if (a.publicId==blackList) b else 
+		if (b.publicId==blackList) a else 
+		*/
+		if (dist(self,a) < dist(self,b)) a else b
 
-  def processWorld(world : World) {
-	 if (world.players.find(_.publicId==getPublicId).isEmpty) return
+	def findNextPlayer(world:World,self:Player) = world.players.reduceRight(getNext(self))
 
-	 val canShoot  =world.shots.find(_.parentId==getPublicId).isEmpty
+	def radiantToVec2(radiant:Float) = norm(Vec2(1,0).rotate(radiant))
 
-	 if (!canShoot) {
-	 	val shot=world.shots.find(_.parentId==getPublicId).get
-		shotSpeed=shot.speed
-	 }
+	def processWorld(world : World) {
+		val selfOpt=world.players.find(_.publicId==getPublicId)
+		if (selfOpt.isEmpty) return
 
-	 if (lastCanShoot && !canShoot) 
-	 	blackList=lastTarget
+		val shotOpt = world.shots.find(_.parentId==getPublicId)
+		val canShoot = shotOpt.isEmpty
 
-	 val self      =world.players.find(_.publicId==getPublicId).get
-	 var next      =findNextPlayer(world,self)
+		if (!canShoot) {
+			shotSpeed=shotOpt.get.speed
+			shotRadius=shotOpt.get.radius
+		}
 
-	 val nowPos =next.pos
-	 val nowDir =norm(new Vec2(1,0).rotate(next.direction))
+		if (lastCanShoot && !canShoot) blackList=lastNextPublicId
 
-	 val (nowNextPos,nowSelfPos) = fix(next.pos,self.pos)
-	 val nowDist=(nowSelfPos-nowNextPos).length
+		val self      =selfOpt.get
+		val next      =findNextPlayer(world,self)
 
-	 val eta=nowDist/shotSpeed
+		val nowPos    =next.pos
+		val nowDir    =radiantToVec2(next.direction)
 
-	 val thenPos=if (lastNextPos==next.pos) 
-							nowPos
-						 else
-							nowPos+nowDir*(eta.floatValue*next.speed)
-	 	
+		val (nowNextPos,nowSelfPos) = fixTurnAround(next.pos,self.pos)
+		val nowDist=(nowSelfPos-nowNextPos).length
 
-	 val (nextPos,selfPos) = fix(thenPos,self.pos)
+		val eta=nowDist/shotSpeed
 
-	 val dir       =norm(new Vec2(1,0).rotate(self.direction))
-	 val delta     =norm(nextPos-selfPos)
-	 val cross     =dir.cross(delta)
-	 val alpha		=abs(asin(cross))
-	 val dist      =(selfPos-nextPos).length
-	 val beta		=atan(next.radius/dist)
+		val targetPosAtEta=nowPos + nowDir*(eta.floatValue * next.speed * (if (next.thrust) 1 else 0)) 
 
-	 val aim       =alpha<beta 
-	 val shoot     =aim && canShoot
-	 val ahead		=dist>self.radius*3
+		val (targetPos,selfPos) = fixTurnAround(targetPosAtEta,self.pos)
+		val dist      =(selfPos-targetPos).length
 
-	 val turn      =(!shoot && !aim)
+		val selfDir   =radiantToVec2(self.direction)
+		val delta     =norm(targetPos-selfPos)
 
-	 val left		=cross<0  && turn
-	 val right     =cross>=0 && turn
+		val cross     =selfDir.cross(delta)
+		val alpha	  =abs(asin(cross))
+		val beta		  =atan((next.radius+shotRadius)/dist)
+		val aim       =alpha<beta 
 
-//println("alpha: "+alpha+" shoot: "+shoot+" dist="+dist+" turn: "+turn+" aim: "+aim+"   "+(if (left) "LEFT" else if (right) "RIGHT" else "AHEAD")+" cross="+cross+" id="+next.publicId)
-/*println(" date: "+java.lang.System.currentTimeMillis+
-		  " cross: "+cross+
-        " myPos: "+self.pos.x+","+self.pos.y+
-		  " yoPos: "+next.pos.x+","+self.pos.y+
-		  " delta: "+delta.x+","+delta.y+
-		  " dir:   "+dir.x+","+dir.y+
-		  " direction: "+self.direction)
-		  */
-//println("left: "+left+" right: "+right+" dir: "+self.direction)
-//println("shoot: "+shoot+" canShoot: "+canShoot)
+		val shoot     =aim && canShoot
 
-	 lastTarget=next.publicId
-	 lastNextPos=next.pos
-	 lastCanShoot=canShoot
+		val turn      =(!shoot && !aim)
+		val left		  =cross<0  && turn
+		val right     =cross>0 && turn
 
-    action(left,right,ahead,shoot)
-  }
+		val ahead	  =dist>self.radius*minDistFactor
+
+		lastNextPublicId=next.publicId
+		lastNextPos=next.pos
+		lastCanShoot=canShoot
+
+		action(left,right,ahead,shoot)
+	}
 }
