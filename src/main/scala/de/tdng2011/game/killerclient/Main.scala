@@ -1,4 +1,4 @@
-package de.tdng2011.game.sampleclient
+package de.tdng2011.game.killerclient
 
 import swing.event.ButtonClicked
 import swing._
