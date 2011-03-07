@@ -1,4 +1,4 @@
-package de.tdng2011.game.sampleclient
+package de.tdng2011.game.killerclient
 
 import de.tdng2011.game.library.util.{ByteUtil,Vec2}
 import actors.Actor
