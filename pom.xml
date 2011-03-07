@@ -8,7 +8,7 @@
 	</parent>
 
 	<groupId>de.tdng2010.game</groupId>
-	<artifactId>scubywars.sampleclient</artifactId>
+	<artifactId>scubywars.killer-client</artifactId>
 	<version>0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
